@@ -21,6 +21,11 @@ def tlacc(frames_predicted, frames_target, direction_thresh = 5.0):
     as well as the target frames.
     """
     
+    if len(frames_predicted) != len(frames_target):
+        raise ValueError("Lengths of trajectories do not match")
+    
+    trajectory_len = len(frames_predicted)
+    
     # Arrays for storing comparison data
     labels_voicing_predicted = []
     labels_voicing_target = []
@@ -53,7 +58,7 @@ def tlacc(frames_predicted, frames_target, direction_thresh = 5.0):
             
         right_val_predicted = frames_predicted[frame]
         right_val_target = frames_target[frame]
-        if frame != min_len - 1:
+        if frame != trajectory_len - 1:
             if labels_voicing_predicted[frame + 1] == 'V':
                 right_val_predicted = frames_predicted[frame + 1]
             if labels_voicing_target[frame + 1] == 'V':
@@ -85,6 +90,6 @@ def tlacc(frames_predicted, frames_target, direction_thresh = 5.0):
     
     # Calculate TLAcc
     direction_correct = len(np.where(np.array(labels_direction_predicted) == np.array(labels_direction_target))[0])
-    direction_correct /= min_len
+    direction_correct /= trajectory_len
     
     return(direction_correct, labels_direction_predicted, labels_direction_target)
